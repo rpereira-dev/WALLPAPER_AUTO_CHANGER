@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Swag Utilities (Swut)</string>
     <string name="action_settings">Settings</string>
+    <string name="swut_wallpaper_update_info">Wallpaper auto update</string>
+    <string name="swut_wallpaper_download">Download new Wallpapers</string>
 </resources>

@@ -21,6 +21,8 @@ import java.util.Calendar;
 
 public class Logger
 {
+	public static final boolean USE = false;
+
 	private static final String ANSI_RESET = "\u001B[0m";
 //	private static final String ANSI_BLACK = "\u001B[30m";
 	private static final String ANSI_RED = "\u001B[31m";
@@ -63,6 +65,11 @@ public class Logger
 	
 	public void log(Logger.Level level, String message)
 	{
+		if (USE == false)
+		{
+			return ;
+		}
+
 		Thread thrd = Thread.currentThread();
 		
 		this._print_stream.printf("%s[%s] [%s] [Thread: %s(%d)]%s ",
@@ -77,12 +84,17 @@ public class Logger
 		{
 			this._print_stream.printf("%" + (this._indentation * 4) + "s", "");
 		}
-		
+
 		this._print_stream.printf("%s\n", message);
 	}
 	
 	public void log(Logger.Level level, Object ... objs)
 	{
+		if (USE == false)
+		{
+			return ;
+		}
+
 		int i = 0;
 		StringBuilder builder = new StringBuilder();
 		for (Object obj : objs)

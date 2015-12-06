@@ -229,11 +229,11 @@ public class WallpaperDownloader
 					else
 					{
 						Logger.get().log(Logger.Level.FINE, "Image is valid! " + img.getFilepath());
-						--imgcount;
 						this._images_valid.add(img);
 					}
 				}
 				this._images.put(url, img);
+				--imgcount;
 			}
 			Logger.get().indent(-1);
 
@@ -241,6 +241,15 @@ public class WallpaperDownloader
 			{
 				imgcount = 0;
 				break;
+			}
+
+			try
+			{
+				Thread.sleep(250);
+			}
+			catch (InterruptedException exception)
+			{
+				break ;
 			}
 		}
 		return (imgcount);

@@ -7,7 +7,13 @@ import org.rpereira.swut.MainActivity;
  */
 public class ThreadWallpaper extends Thread implements Runnable
 {
-	private static final int UPDATE_TIME = 1000 * 10;
+	private static final String[] URLS = {
+			"http://idesigniphone.com/category/nature",
+			"http://idesigniphone.com/category/funny",
+			"http://idesigniphone.com/category/vector",
+			"http://idesigniphone.com/category/3d",
+			"http://www.mobileswall.com/"
+	};
 
 	private WallpaperDownloader _downloader;
 	private boolean _run;
@@ -21,40 +27,22 @@ public class ThreadWallpaper extends Thread implements Runnable
 	@Override
 	public void run()
 	{
-		Runnable toastrun = new Runnable()
+		while (this._run)
 		{
-			@Override
-			public void run()
+			for (String url : URLS)
 			{
-				MainActivity.toast("Update thread!", false);
-				WallpaperImage img = _downloader.getRandomImage();
-				if (img != null)
-				{
-					WallpaperManager.setWallpaper(img.getFilepath());
-				}
+				this._downloader.searchWallpapers(url, 1, 10);
 			}
-		};
-		while (true)
-		{
-			MainActivity.runOnUIThread(toastrun);
-
-			this._downloader.searchWallpapers("http://www.mobileswall.com/", 1, 5);
 
 			try
 			{
-				Thread.sleep(UPDATE_TIME);
+				Thread.sleep(10 * 1000);
 			}
-			catch (InterruptedException exception)
+			catch (InterruptedException e)
 			{
-				break ;
-			}
-
-			if (this._run == false)
-			{
-				break ;
+				this._run = false;
 			}
 		}
-		this._run = false;
 	}
 
 	public void startRequest()

@@ -13,7 +13,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="New ToggleButton"
-        android:id="@+id/toggleButtonWallpaper"
+        android:id="@+id/toggleButtonWallpaperDownload"
         android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"/>
+
+    <ToggleButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New ToggleButton"
+        android:id="@+id/toggleButtonWallpaperUpdate"
+        android:layout_below="@+id/textViewWallpaperUpdate"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/swut_wallpaper_update_info"
+        android:id="@+id/textViewWallpaperUpdate"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="84dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/swut_wallpaper_download"
+        android:id="@+id/textView"
+        android:layout_above="@+id/toggleButtonWallpaperDownload"
         android:layout_centerHorizontal="true"/>
 </RelativeLayout>

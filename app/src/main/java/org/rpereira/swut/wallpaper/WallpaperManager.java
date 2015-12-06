@@ -17,30 +17,38 @@ public class WallpaperManager
 {
 	private static android.app.WallpaperManager _manager;
 	private static WallpaperDownloader _downloader;
-	private static ThreadWallpaper _thrd;
+	private static ThreadWallpaper _thrd_download;
+	private static boolean _update;
 
 	public static void initialize(Context context, String dirpath)
 	{
 		_manager = android.app.WallpaperManager.getInstance(context);
 		_downloader = new WallpaperDownloader(dirpath);
 		_downloader.start();
-		_thrd = new ThreadWallpaper(_downloader);
+		_thrd_download = new ThreadWallpaper(_downloader);
 	}
 
 	/**
-	 * start the wallpaper services
+	 * start the wallpaper download thread
 	 */
-	public static void start()
+	public static void setDownload(boolean download)
 	{
-		_thrd.startRequest();
+		if (download)
+		{
+			_thrd_download.startRequest();
+		}
+		else
+		{
+			_thrd_download.stopRequest();
+		}
 	}
 
 	/**
-	 * stop the wallpaper services
+	 * start the wallpaper update
 	 */
-	public static void stop()
+	public static void setUpdate(boolean update)
 	{
-		_thrd.stopRequest();
+		_update = update;
 	}
 
 	/**
@@ -48,8 +56,31 @@ public class WallpaperManager
 	 */
 	public static void destroy()
 	{
-		stop();
+		setDownload(false);
+		setUpdate(false);
 		_downloader.stop();
+	}
+
+	/** update the wallpaper manager */
+	public static void update()
+	{
+		if (_update == false)
+		{
+			return ;
+		}
+
+		MainActivity.runOnUIThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				WallpaperImage img = _downloader.getRandomImage();
+				if (img != null)
+				{
+					WallpaperManager.setWallpaper(img.getFilepath());
+				}
+			}
+		});
 	}
 
 	/**
@@ -77,4 +108,6 @@ public class WallpaperManager
 			MainActivity.toast("An error occurred while setting wallpaper: " + e.getLocalizedMessage(), true);
 		}
 	}
+
+
 }

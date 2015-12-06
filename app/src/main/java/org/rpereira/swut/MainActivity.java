@@ -16,6 +16,8 @@ public class MainActivity extends AppCompatActivity
 	/** app instance */
 	private static MainActivity _instance;
 
+	private static MainThread _thrd;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity
 	protected void onDestroy()
 	{
 		super.onDestroy();
+		_thrd.stopRequest();
 		WallpaperManager.destroy();
 	}
 
@@ -64,25 +67,34 @@ public class MainActivity extends AppCompatActivity
 	private void initialize()
 	{
 		_instance = this;
+		_thrd = new MainThread();
+
 		ResourceManager.start(this);
 
-		final ToggleButton button = (ToggleButton) findViewById(R.id.toggleButtonWallpaper);
-		button.setChecked(false);
-		button.setOnClickListener(new View.OnClickListener()
+		final ToggleButton updatebutton = (ToggleButton) findViewById(R.id.toggleButtonWallpaperUpdate);
+		updatebutton.setChecked(false);
+		updatebutton.setOnClickListener(new View.OnClickListener()
 		{
 			@Override
 			public void onClick(View v)
 			{
-				if (button.isChecked())
-				{
-					WallpaperManager.start();
-				}
-				else
-				{
-					WallpaperManager.stop();
-				}
+				WallpaperManager.setUpdate(updatebutton.isChecked());
 			}
 		});
+
+
+		final ToggleButton downloadbutton = (ToggleButton) findViewById(R.id.toggleButtonWallpaperDownload);
+		downloadbutton.setChecked(false);
+		downloadbutton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				WallpaperManager.setDownload(downloadbutton.isChecked());
+			}
+		});
+
+		_thrd.startRequest();
 
 	}
 
