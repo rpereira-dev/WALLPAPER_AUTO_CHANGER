@@ -29,12 +29,12 @@ public class WallpaperUpdateThread extends Thread implements Runnable
 
 	public void startRequest()
 	{
-		this._run = true;
-
-		if (!this.isAlive())
+		if (this.isAlive() || this._run)
 		{
-			this.start();
+			return ;
 		}
+		this.start();
+		this._run = true;
 	}
 
 	public void stopRequest()

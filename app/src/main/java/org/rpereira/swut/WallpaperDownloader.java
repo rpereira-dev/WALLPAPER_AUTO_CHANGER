@@ -71,6 +71,7 @@ public class WallpaperDownloader
 			{
 				Logger.get().log(Logger.Level.ERROR, "Couldnt create blacklist!", e.getLocalizedMessage());
 			}
+			Logger.get().log(Logger.Level.DEBUG, "Images folder didnt exist and was created.");
 		}
 		else if (images.canRead())
 		{
@@ -98,6 +99,7 @@ public class WallpaperDownloader
 				if (image.getValidity())
 				{
 					this._images_valid.add(image);
+					Logger.get().log(Logger.Level.DEBUG, "Added image: " + image.getFilepath());
 				}
 			}
 		}

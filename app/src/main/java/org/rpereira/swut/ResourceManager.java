@@ -7,6 +7,8 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * Created by rpereira on 05/12/15.
@@ -25,7 +27,9 @@ public class ResourceManager
 		activity.getWindowManager().getDefaultDisplay().getSize(SIZE);
 		_dirpath = getFilepath(Environment.getExternalStorageDirectory().toString(), "SWUT");
 		_savedir = new File(_dirpath);
-		if (_savedir.exists() == false)
+		initializeLogger();
+
+		if (!_savedir.exists())
 		{
 			_savedir.mkdir();
 			MainActivity.toast("Created savedir! " + _savedir.exists(), false);
@@ -33,6 +37,25 @@ public class ResourceManager
 		_shared_preferences = PreferenceManager.getDefaultSharedPreferences(activity);
 		_shared_preferences_editor = _shared_preferences.edit();
 		WallpaperManager.initialize(activity, getFilepath(_dirpath, "images"));
+	}
+
+	public static void initializeLogger()
+	{
+		try
+		{
+			File logfile = new File(getFilepath(_dirpath, ".log.txt"));
+			if (!logfile.exists())
+			{
+				logfile.createNewFile();
+			}
+			Logger.get().setPrintStream(new PrintStream(logfile));
+			Logger.get().use(true);
+		}
+		catch (IOException exception)
+		{
+			System.err.println("Couldnt iniatialize logger: " + exception.getLocalizedMessage());
+			Logger.get().use(false);
+		}
 	}
 
 	public static void stop()

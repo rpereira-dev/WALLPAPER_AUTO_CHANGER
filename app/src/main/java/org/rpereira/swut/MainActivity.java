@@ -13,6 +13,7 @@ import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,6 +31,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +84,11 @@ public class MainActivity extends AppCompatActivity
 	 */
 	private void initialize()
 	{
+		if (_instance == this)
+		{
+			return ;
+		}
+
 		_instance = this;
 		_thrd = new WallpaperUpdateThread();
 
@@ -143,33 +150,39 @@ public class MainActivity extends AppCompatActivity
 		layout.setOrientation(LinearLayout.VERTICAL);
 
 		final Spinner spinner = new Spinner(this);
-		ArrayList<Integer> choices = new ArrayList<>();
-		choices.add(5);
-		choices.add(10);
-		choices.add(15);
-		choices.add(30);
-		choices.add(60 * 1);
-		choices.add(60 * 2);
-		choices.add(60 * 5);
-		choices.add(60 * 15);
-		choices.add(60 * 30);
-		choices.add(60 * 60);
-		ArrayAdapter<Integer> spinnerArrayAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, choices);
+		ArrayList<SpinnerTimeValue> choices = new ArrayList<>();
+		choices.add(new SpinnerTimeValue(5, "5 sec"));
+		choices.add(new SpinnerTimeValue(10, "10 sec"));
+		choices.add(new SpinnerTimeValue(15, "15 sec"));
+		choices.add(new SpinnerTimeValue(30, "30 sec"));
+		choices.add(new SpinnerTimeValue(60, "1 min"));
+		choices.add(new SpinnerTimeValue(60 * 2, "2 min"));
+		choices.add(new SpinnerTimeValue(60 * 5, "5 min"));
+		choices.add(new SpinnerTimeValue(60 * 15, "15 min"));
+		choices.add(new SpinnerTimeValue(60 * 30, "30 min"));
+		choices.add(new SpinnerTimeValue(60 * 60, "1 h"));
+		choices.add(new SpinnerTimeValue(60 * 60 * 2, "2 h"));
+		choices.add(new SpinnerTimeValue(60 * 60 * 4, "4 h"));
+		choices.add(new SpinnerTimeValue(60 * 60 * 4, "4 h"));
+		choices.add(new SpinnerTimeValue(60 * 60 * 12, "12 h"));
+		choices.add(new SpinnerTimeValue(60 * 60 * 24, "24 h"));
+		ArrayAdapter<SpinnerTimeValue> spinnerArrayAdapter = new ArrayAdapter<SpinnerTimeValue>(this, android.R.layout.simple_spinner_dropdown_item, choices);
 		spinner.setAdapter(spinnerArrayAdapter);
 		layout.addView(spinner);
-		int value = ResourceManager.getPreferences("timer", 0);
-		WallpaperUpdateThread.SLEEP_TIME = (long)(value * 1000);
+		int index = ResourceManager.getPreferences("timer", 0);
+		WallpaperUpdateThread.SLEEP_TIME = (long)(choices.get(index).getValue() * 1000);
 		spinner.setSelection(value);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 		{
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
 			{
-				int valueset = (Integer)spinner.getSelectedItem();
+				SpinnerTimeValue timeset = (SpinnerTimeValue)spinner.getSelectedItem();
 				ResourceManager.putPreferences("timer", position);
 				Logger.get().log(Logger.Level.DEBUG, position);
 				ResourceManager.commitPreferences();
-				WallpaperUpdateThread.SLEEP_TIME = (long)(valueset * 1000);
+				WallpaperUpdateThread.SLEEP_TIME = (long)(timeset.getValue() * 1000);
+				toast("Time between 2 wallpapers was set to: " + timeset.toString(), false);
 			}
 
 			@Override
@@ -239,5 +252,28 @@ public class MainActivity extends AppCompatActivity
 	public static MainActivity instance()
 	{
 		return (_instance);
+	}
+}
+
+class SpinnerTimeValue
+{
+	private int _value;
+	private String _str;
+
+	public SpinnerTimeValue(int value, String str)
+	{
+		this._value = value;
+		this._str = str;
+	}
+
+	@Override
+	public String toString()
+	{
+		return (this._str);
+	}
+
+	public int getValue()
+	{
+		return (this._value);
 	}
 }

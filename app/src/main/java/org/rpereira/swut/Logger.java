@@ -21,8 +21,6 @@ import java.util.Calendar;
 
 public class Logger
 {
-	public static final boolean USE = false;
-
 	private static final String ANSI_RESET = "\u001B[0m";
 //	private static final String ANSI_BLACK = "\u001B[30m";
 	private static final String ANSI_RED = "\u001B[31m";
@@ -42,10 +40,13 @@ public class Logger
 
 	private PrintStream	_print_stream;
 	private int _indentation;
+	private boolean _use;
 	
 	public Logger(PrintStream stream)
 	{
 		this._print_stream = stream;
+		this._use = true;
+		this._indentation = 0;
 	}
 	
 	public PrintStream getPrintStream()
@@ -57,6 +58,11 @@ public class Logger
 	{
 		this._print_stream = stream;;
 	}
+
+	public void use(boolean use)
+	{
+		this._use = use;
+	}
 	
 	public void print(String string)
 	{
@@ -65,7 +71,7 @@ public class Logger
 	
 	public void log(Logger.Level level, String message)
 	{
-		if (USE == false)
+		if (this._use == false)
 		{
 			return ;
 		}
@@ -90,7 +96,7 @@ public class Logger
 	
 	public void log(Logger.Level level, Object ... objs)
 	{
-		if (USE == false)
+		if (this._use == false)
 		{
 			return ;
 		}

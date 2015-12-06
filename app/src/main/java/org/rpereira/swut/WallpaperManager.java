@@ -152,7 +152,7 @@ public class WallpaperManager
 	/** update the wallpaper manager */
 	public static void update()
 	{
-		if (_update == false)
+		if (!_update)
 		{
 			return ;
 		}
@@ -188,7 +188,7 @@ public class WallpaperManager
 			else
 			{
 				_manager.setBitmap(bitmap);
-				//MainActivity.toast("Wallpaper was set! " + filepath, false);
+				Logger.get().log(Logger.Level.FINE, "Wallpaper set: " + filepath);
 			}
 		}
 		catch (IOException e)
