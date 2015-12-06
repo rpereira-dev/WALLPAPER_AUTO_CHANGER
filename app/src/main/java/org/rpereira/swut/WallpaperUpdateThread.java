@@ -1,13 +1,11 @@
 package org.rpereira.swut;
 
-import org.rpereira.swut.wallpaper.WallpaperManager;
-
 /**
  * Created by rpereira on 06/12/15.
  */
-public class MainThread extends Thread implements Runnable
+public class WallpaperUpdateThread extends Thread implements Runnable
 {
-	private static final long WALLPAPER_AUTO_UPDATE_TIMER = 1000 * 30; //30 sec
+	public static long SLEEP_TIME = 1000;
 
 	private boolean _run = false;
 
@@ -20,7 +18,7 @@ public class MainThread extends Thread implements Runnable
 
 			try
 			{
-				Thread.sleep(WALLPAPER_AUTO_UPDATE_TIMER);
+				Thread.sleep(SLEEP_TIME);
 			}
 			catch (InterruptedException e)
 			{

@@ -1,20 +1,12 @@
-package org.rpereira.swut.wallpaper;
+package org.rpereira.swut;
 
-import org.rpereira.swut.MainActivity;
+import java.util.ArrayList;
 
 /**
  * Created by rpereira on 05/12/15.
  */
 public class ThreadWallpaper extends Thread implements Runnable
 {
-	private static final String[] URLS = {
-			"http://idesigniphone.com/category/nature",
-			"http://idesigniphone.com/category/funny",
-			"http://idesigniphone.com/category/vector",
-			"http://idesigniphone.com/category/3d",
-			"http://www.mobileswall.com/"
-	};
-
 	private WallpaperDownloader _downloader;
 	private boolean _run;
 
@@ -27,20 +19,27 @@ public class ThreadWallpaper extends Thread implements Runnable
 	@Override
 	public void run()
 	{
+		ArrayList<WallpaperType> types = WallpaperManager.getTypes();
 		while (this._run)
 		{
-			for (String url : URLS)
+			for (WallpaperType type : types)
 			{
-				this._downloader.searchWallpapers(url, 1, 10);
-			}
+				if (type.using())
+				{
+					for (String url : type.getUrls())
+					{
+						_downloader.searchWallpapers(url, 0, 5); //search 100 images in the page at most, and follow 0 redirection
 
-			try
-			{
-				Thread.sleep(10 * 1000);
-			}
-			catch (InterruptedException e)
-			{
-				this._run = false;
+						try
+						{
+							Thread.sleep(500);
+						}
+						catch (InterruptedException exception)
+						{
+							break ;
+						}
+					}
+				}
 			}
 		}
 	}

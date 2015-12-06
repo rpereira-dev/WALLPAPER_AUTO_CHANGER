@@ -1,4 +1,4 @@
-package org.rpereira.swut.wallpaper;
+package org.rpereira.swut;
 
 import android.graphics.BitmapFactory;
 
@@ -23,7 +23,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.rpereira.swut.Logger;
 
 public class WallpaperDownloader
 {
@@ -205,9 +204,10 @@ public class WallpaperDownloader
 		{
 			String url = image.attr("src");
 			url = this.fixUrl(url);
-			WallpaperImage img = this._images.get(url);
 			Logger.get().log(Logger.Level.FINE, url);
 			Logger.get().indent(1);
+
+			WallpaperImage img = this._images.get(url);
 
 			if (img != null && img.getValidity() == false)
 			{
@@ -230,10 +230,10 @@ public class WallpaperDownloader
 					{
 						Logger.get().log(Logger.Level.FINE, "Image is valid! " + img.getFilepath());
 						this._images_valid.add(img);
+						--imgcount;
 					}
 				}
 				this._images.put(url, img);
-				--imgcount;
 			}
 			Logger.get().indent(-1);
 
@@ -241,15 +241,6 @@ public class WallpaperDownloader
 			{
 				imgcount = 0;
 				break;
-			}
-
-			try
-			{
-				Thread.sleep(250);
-			}
-			catch (InterruptedException exception)
-			{
-				break ;
 			}
 		}
 		return (imgcount);
@@ -323,9 +314,10 @@ public class WallpaperDownloader
 	/**
 	 * remove the blacklist and every images
 	 */
-	public void clean()
+	public void reset()
 	{
 		this._images.clear();
+		this._images_valid.clear();
 
 		File dir = new File(this._dst);
 		if (dir.exists() == false)

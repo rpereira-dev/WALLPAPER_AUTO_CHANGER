@@ -1,22 +1,46 @@
 package org.rpereira.swut;
 
+import android.app.ActionBar;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
-import org.rpereira.swut.wallpaper.WallpaperManager;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
 {
 	/** app instance */
 	private static MainActivity _instance;
 
-	private static MainThread _thrd;
+	private static WallpaperUpdateThread _thrd;
+
+	private static Dialog _dialog = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
@@ -34,30 +58,21 @@ public class MainActivity extends AppCompatActivity
 		super.onDestroy();
 		_thrd.stopRequest();
 		WallpaperManager.destroy();
+		ResourceManager.stop();
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(org.rpereira.swut.R.menu.menu_main, menu);
+		menu.add("Settings");
+
 		return (true);
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-
-		//noinspection SimplifiableIfStatement
-		if (id == org.rpereira.swut.R.id.action_settings)
-		{
-			return (true);
-		}
-
+		this._dialog.show();
 		return (super.onOptionsItemSelected(item));
 	}
 
@@ -67,7 +82,7 @@ public class MainActivity extends AppCompatActivity
 	private void initialize()
 	{
 		_instance = this;
-		_thrd = new MainThread();
+		_thrd = new WallpaperUpdateThread();
 
 		ResourceManager.start(this);
 
@@ -95,7 +110,95 @@ public class MainActivity extends AppCompatActivity
 		});
 
 		_thrd.startRequest();
+		this.initializeDialog();
+	}
 
+	private void initializeDialog()
+	{
+		this._dialog = new Dialog(this);
+		this._dialog.setTitle("Wallpaper settings");
+		LinearLayout layout = new LinearLayout(this);
+		LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.MATCH_PARENT);
+		layout.setLayoutParams(new FrameLayout.LayoutParams(params));
+		layout.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+		layout.setBackgroundColor(Color.TRANSPARENT);
+		layout.setOrientation(LinearLayout.VERTICAL);
+
+		final Spinner spinner = new Spinner(this);
+		ArrayList<Integer> choices = new ArrayList<>();
+		choices.add(5);
+		choices.add(10);
+		choices.add(15);
+		choices.add(30);
+		choices.add(60 * 1);
+		choices.add(60 * 2);
+		choices.add(60 * 5);
+		choices.add(60 * 15);
+		choices.add(60 * 30);
+		choices.add(60 * 60);
+		ArrayAdapter<Integer> spinnerArrayAdapter = new ArrayAdapter<Integer>(this, android.R.layout.simple_spinner_dropdown_item, choices);
+		spinner.setAdapter(spinnerArrayAdapter);
+		layout.addView(spinner);
+		int value = ResourceManager.getPreferences("timer", 0);
+		WallpaperUpdateThread.SLEEP_TIME = (long)(value * 1000);
+		spinner.setSelection(value);
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+		{
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+			{
+				int valueset = (Integer)spinner.getSelectedItem();
+				ResourceManager.putPreferences("timer", position);
+				Logger.get().log(Logger.Level.DEBUG, position);
+				ResourceManager.commitPreferences();
+				WallpaperUpdateThread.SLEEP_TIME = (long)(valueset * 1000);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {}
+
+		});
+
+		StyleSpan bss = new StyleSpan(android.graphics.Typeface.BOLD);
+
+		for (final WallpaperType type : WallpaperManager.getTypes())
+		{
+			SpannableStringBuilder sb = new SpannableStringBuilder(type.getName());
+			sb.setSpan(bss, 0, type.getName().length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+			final CheckBox checkbox = new CheckBox(this);
+			checkbox.setText(sb);
+			checkbox.setChecked(type.using());
+			checkbox.setOnClickListener(new View.OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					type.use(checkbox.isChecked());
+				}
+			});
+			layout.addView(checkbox);
+		}
+
+
+		String text = "Reset";
+		StyleSpan iss = new StyleSpan(android.graphics.Typeface.BOLD);
+		SpannableStringBuilder sb = new SpannableStringBuilder(text);
+		sb.setSpan(iss, 0, sb.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+
+		Button reset = new Button(this);
+		reset.setText(sb);
+		reset.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				WallpaperManager.reset();
+			}
+		});
+		layout.addView(reset);
+
+		this._dialog.addContentView(layout, params);
 	}
 
 	/**
