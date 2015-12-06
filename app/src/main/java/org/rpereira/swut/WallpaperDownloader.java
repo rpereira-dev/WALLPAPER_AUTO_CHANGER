@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Stack;
+
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -37,12 +39,15 @@ public class WallpaperDownloader
 	private File _dstdir;
 	private String _dst;
 
+	private Stack<String> _urls_to_search;
+
 	public WallpaperDownloader(String dst)
 	{
 		this._images = new HashMap<>();
 		this._images_valid = new ArrayList<>();
 		this._dst = dst;
 		this._dstdir = new File(dst);
+		this._urls_to_search = new Stack<>();
 	}
 
 	/**
@@ -152,10 +157,17 @@ public class WallpaperDownloader
 		return (this._dst + (this._dst.endsWith("/") ? "" : "/") + name);
 	}
 
+	public void bindUrl(String url, int deepness, int imgcount)
+	{
+		this._urls_to_search.clear();
+		Logger.get().log(Logger.Level.DEBUG, "Bound url", url, deepness, imgcount);
+		this.searchWallpapers(url, deepness, imgcount);
+	}
+
 	/**
 	 * download every images on the given website url, and do it recursively on pages links
 	 */
-	public int searchWallpapers(String url, int deepness, int imgcount)
+	private int searchWallpapers(String url, int deepness, int imgcount)
 	{
 		Logger.get().log(Logger.Level.DEBUG, url, deepness, imgcount);
 
@@ -204,39 +216,8 @@ public class WallpaperDownloader
 		{
 			String url = image.attr("src");
 			url = this.fixUrl(url);
-			Logger.get().log(Logger.Level.FINE, url);
-			Logger.get().indent(1);
-
-			WallpaperImage img = this._images.get(url);
-
-			if (img != null && img.getValidity() == false)
-			{
-				Logger.get().log(Logger.Level.FINE, "Blacklisted file!");
-			}
-			else
-			{
-				String filepath = this.getLocalPathFor(getImageNameFromUrl(url));
-				img = new WallpaperImage(url, filepath);
-				img.setValidity(img.isExtensionValid());
-				if (img.getValidity() == true && img.download())
-				{
-					img.setValidity(img.isFormatValid());
-					if (img.getValidity() == false)
-					{
-						img.delete();
-						Logger.get().log(Logger.Level.FINE, "Image wasnt valid, removing: " + img.getFilepath());
-					}
-					else
-					{
-						Logger.get().log(Logger.Level.FINE, "Image is valid! " + img.getFilepath());
-						this._images_valid.add(img);
-						--imgcount;
-					}
-				}
-				this._images.put(url, img);
-			}
-			Logger.get().indent(-1);
-
+			this._urls_to_search.add(url);
+			--imgcount;
 			if (imgcount <= 0)
 			{
 				imgcount = 0;
@@ -244,6 +225,52 @@ public class WallpaperDownloader
 			}
 		}
 		return (imgcount);
+	}
+
+	public boolean done()
+	{
+		return (this._urls_to_search.size() == 0);
+	}
+
+	/** download an image and return true if the image as been downloaded successfully */
+	public boolean processImage()
+	{
+		boolean r = false;
+
+		String url = this._urls_to_search.pop();
+		WallpaperImage img = this._images.get(url);
+
+		Logger.get().log(Logger.Level.FINE, "Processing image: " + url);
+		Logger.get().indent(1);
+
+		if (img != null && img.getValidity() == false)
+		{
+			Logger.get().log(Logger.Level.FINE, "Blacklisted file!");
+		}
+		else if (img == null)
+		{
+			String filepath = this.getLocalPathFor(getImageNameFromUrl(url));
+			img = new WallpaperImage(url, filepath);
+			img.setValidity(img.isExtensionValid());
+			if (img.getValidity() == true && img.download())
+			{
+				img.setValidity(img.isFormatValid());
+				if (img.getValidity() == false)
+				{
+					img.delete();
+					Logger.get().log(Logger.Level.FINE, "Image wasnt valid, removing: " + img.getFilepath());
+				}
+				else
+				{
+					Logger.get().log(Logger.Level.FINE, "Image is valid! " + img.getFilepath());
+					this._images_valid.add(img);
+					r = true;
+				}
+			}
+			this._images.put(url, img);
+		}
+		Logger.get().indent(-1);
+		return (r);
 	}
 
 	public WallpaperImage getRandomImage()

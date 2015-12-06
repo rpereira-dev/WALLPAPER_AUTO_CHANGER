@@ -30,7 +30,6 @@ public class WallpaperManager
 		_manager = android.app.WallpaperManager.getInstance(context);
 		_downloader = new WallpaperDownloader(dirpath);
 		_downloader.start();
-		_thrd_download = new ThreadWallpaper(_downloader);
 		_types = new ArrayList<>();
 		loadTypes();
 	}
@@ -80,11 +79,19 @@ public class WallpaperManager
 	{
 		if (download)
 		{
+			if (_thrd_download != null)
+			{
+				_thrd_download.stopRequest();
+			}
+			_thrd_download = new ThreadWallpaper(_downloader);
 			_thrd_download.startRequest();
 		}
 		else
 		{
-			_thrd_download.stopRequest();
+			if (_thrd_download != null)
+			{
+				_thrd_download.stopRequest();
+			}
 		}
 	}
 

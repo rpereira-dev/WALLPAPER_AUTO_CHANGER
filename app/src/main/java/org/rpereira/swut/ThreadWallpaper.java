@@ -19,6 +19,16 @@ public class ThreadWallpaper extends Thread implements Runnable
 	@Override
 	public void run()
 	{
+		Logger.get().log(Logger.Level.FINE, "Downloader thread started!");
+		MainActivity.runOnUIThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MainActivity.toast("Downloader thread started.", false);
+			}
+		});
+
 		ArrayList<WallpaperType> types = WallpaperManager.getTypes();
 		while (this._run)
 		{
@@ -28,30 +38,54 @@ public class ThreadWallpaper extends Thread implements Runnable
 				{
 					for (String url : type.getUrls())
 					{
-						_downloader.searchWallpapers(url, 0, 5); //search 100 images in the page at most, and follow 0 redirection
+						_downloader.bindUrl(url, 0, Integer.MAX_VALUE); //grep every image possible in the URL without redirection
+						while (!_downloader.done())
+						{
+							_downloader.processImage();
+							if (this._run == false)
+							{
+								break ;
+							}
+						}
+
+						if (this._run == false)
+						{
+							break ;
+						}
 
 						try
 						{
-							Thread.sleep(500);
+							Thread.sleep(250);
 						}
 						catch (InterruptedException exception)
 						{
 							break ;
 						}
+
 					}
 				}
 			}
 		}
+
+		Logger.get().log(Logger.Level.FINE, "Downloader thread stopped!");
+		MainActivity.runOnUIThread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				MainActivity.toast("Downloader thread stopped.", false);
+			}
+		});
 	}
 
 	public void startRequest()
 	{
-		this._run = true;
-
-		if (!this.isAlive())
+		if (this.isAlive() || this._run)
 		{
-			this.start();
+			return ;
 		}
+		this.start();
+		this._run = true;
 	}
 
 	public void stopRequest()

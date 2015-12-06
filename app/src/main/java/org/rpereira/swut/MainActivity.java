@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
 	{
 		super.onDestroy();
 		_thrd.stopRequest();
+
 		WallpaperManager.destroy();
 		ResourceManager.stop();
 	}
@@ -105,7 +106,24 @@ public class MainActivity extends AppCompatActivity
 			@Override
 			public void onClick(View v)
 			{
-				WallpaperManager.setDownload(downloadbutton.isChecked());
+				boolean b = false;
+				for (WallpaperType type : WallpaperManager.getTypes())
+				{
+					if (type.using())
+					{
+						b = true;
+						break ;
+					}
+				}
+				if (b)
+				{
+					WallpaperManager.setDownload(downloadbutton.isChecked());
+				}
+				else
+				{
+					MainActivity.toast("No Wallpaper types are choosen, nothing to be downloaded.", false);
+					downloadbutton.setChecked(false);
+				}
 			}
 		});
 
