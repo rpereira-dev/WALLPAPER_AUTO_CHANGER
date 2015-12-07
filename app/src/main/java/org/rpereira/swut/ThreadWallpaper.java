@@ -42,13 +42,13 @@ public class ThreadWallpaper extends Thread implements Runnable
 						while (!_downloader.done())
 						{
 							_downloader.processImage();
-							if (this._run == false)
+							if (!this._run)
 							{
 								break ;
 							}
 						}
 
-						if (this._run == false)
+						if (!this._run)
 						{
 							break ;
 						}
@@ -61,7 +61,6 @@ public class ThreadWallpaper extends Thread implements Runnable
 						{
 							break ;
 						}
-
 					}
 				}
 			}

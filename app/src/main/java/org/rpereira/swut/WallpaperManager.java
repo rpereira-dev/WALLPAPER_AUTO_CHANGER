@@ -167,6 +167,11 @@ public class WallpaperManager
 				{
 					WallpaperManager.setWallpaper(img.getFilepath());
 				}
+				else
+				{
+					Logger.get().log(Logger.Level.ERROR, "Couldnt get any random images!");
+					MainActivity.toast("Not wallpaper where found!", false);
+				}
 			}
 		});
 	}

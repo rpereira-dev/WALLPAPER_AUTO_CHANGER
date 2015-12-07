@@ -18,6 +18,7 @@ public class WallpaperUpdateThread extends Thread implements Runnable
 
 			try
 			{
+				Logger.get().log(Logger.Level.FINE, "Wallpaper update sleep for: " + SLEEP_TIME / 1000 + " sec");
 				Thread.sleep(SLEEP_TIME);
 			}
 			catch (InterruptedException e)

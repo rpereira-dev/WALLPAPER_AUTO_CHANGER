@@ -17,6 +17,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
+import java.util.Random;
 import java.util.Set;
 import java.util.Stack;
 
@@ -28,8 +29,7 @@ import org.jsoup.select.Elements;
 
 public class WallpaperDownloader
 {
-	private static final String IMAGES_FILE = ".images";
-	private static final String DEFAULT_DST = "./images";
+	private static final String IMAGES_FILE = "images.txt";
 
 	/**
 	 * blacklist of images url with wrong dimension
@@ -38,6 +38,9 @@ public class WallpaperDownloader
 	private ArrayList<WallpaperImage> _images_valid;
 	private File _dstdir;
 	private String _dst;
+	private long _maxcounter; //max counter before auto save
+	private long _counter; //counter before auto save
+	private Random _rand;
 
 	private Stack<String> _urls_to_search;
 
@@ -48,6 +51,17 @@ public class WallpaperDownloader
 		this._dst = dst;
 		this._dstdir = new File(dst);
 		this._urls_to_search = new Stack<>();
+		this._maxcounter = 10;
+		this._counter = 0;
+		this._rand = new Random();
+	}
+
+	/**
+	 * @param value : max number of processed image before an auto save
+	 */
+	public void setMaxCounter(int value)
+	{
+		this._maxcounter = value;
 	}
 
 	/**
@@ -60,20 +74,20 @@ public class WallpaperDownloader
 			this._dstdir.mkdir();
 		}
 
-		File images = new File(this.getLocalPathFor(IMAGES_FILE));
-		if (images.exists() == false)
+		File savefile = new File(this.getLocalPathFor(IMAGES_FILE));
+		if (!savefile.exists())
 		{
 			try
 			{
-				images.createNewFile();
+				savefile.createNewFile();
 			}
 			catch (IOException e)
 			{
-				Logger.get().log(Logger.Level.ERROR, "Couldnt create blacklist!", e.getLocalizedMessage());
+				Logger.get().log(Logger.Level.ERROR, "Couldnt create save file!", e.getLocalizedMessage());
 			}
 			Logger.get().log(Logger.Level.DEBUG, "Images folder didnt exist and was created.");
 		}
-		else if (images.canRead())
+		else
 		{
 			this.loadImagesSaveFile();
 		}
@@ -101,6 +115,8 @@ public class WallpaperDownloader
 					this._images_valid.add(image);
 					Logger.get().log(Logger.Level.DEBUG, "Added image: " + image.getFilepath());
 				}
+				Logger.get().log(Logger.Level.DEBUG, "Tested image: " + image.getFilepath());
+
 			}
 		}
 		catch (Exception e)
@@ -124,6 +140,11 @@ public class WallpaperDownloader
 	 */
 	public void stop()
 	{
+		this.save();
+	}
+
+	private void save()
+	{
 		File file = new File(this.getLocalPathFor(IMAGES_FILE));
 
 		try
@@ -134,15 +155,13 @@ public class WallpaperDownloader
 			}
 
 			PrintWriter writer = new PrintWriter(file);
-			writer.print("");
 			Set<Entry<String, WallpaperImage>> entries = this._images.entrySet();
 			for (Entry<String, WallpaperImage> entry : entries)
 			{
 				WallpaperImage img = entry.getValue();
-				writer.print(img.getUrl());
-				writer.print(" ");
-				writer.println(img.getValidity());
+				writer.println(img.getUrl() + " " + img.getValidity());
 			}
+			writer.flush();
 			writer.close();
 		}
 		catch (IOException e)
@@ -265,8 +284,14 @@ public class WallpaperDownloader
 				else
 				{
 					Logger.get().log(Logger.Level.FINE, "Image is valid! " + img.getFilepath());
-					this._images_valid.add(img);
 					r = true;
+					this._images_valid.add(img);
+					++this._counter;
+					if (this._counter >= this._maxcounter)
+					{
+						this.save();
+						this._counter = 0;
+					}
 				}
 			}
 			this._images.put(url, img);
@@ -281,7 +306,7 @@ public class WallpaperDownloader
 		{
 			return (null);
 		}
-		int index = (int)(System.currentTimeMillis() % this._images_valid.size());
+		int index = this._rand.nextInt(this._images_valid.size());
 		return (this._images_valid.get(index));
 	}
 

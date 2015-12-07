@@ -2,6 +2,7 @@ package org.rpereira.swut;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -77,6 +78,14 @@ public class MainActivity extends AppCompatActivity
 	{
 		this._dialog.show();
 		return (super.onOptionsItemSelected(item));
+	}
+
+	@Override
+	public void onBackPressed()
+	{
+		Intent intent = new Intent(Intent.ACTION_MAIN);
+		intent.addCategory(Intent.CATEGORY_HOME);
+		startActivity(intent);
 	}
 
 	/**
@@ -171,7 +180,7 @@ public class MainActivity extends AppCompatActivity
 		layout.addView(spinner);
 		int index = ResourceManager.getPreferences("timer", 0);
 		WallpaperUpdateThread.SLEEP_TIME = (long)(choices.get(index).getValue() * 1000);
-		spinner.setSelection(value);
+		spinner.setSelection(index);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 		{
 			@Override

@@ -43,7 +43,7 @@ public class ResourceManager
 	{
 		try
 		{
-			File logfile = new File(getFilepath(_dirpath, ".log.txt"));
+			File logfile = new File(getFilepath(_dirpath, "log.txt"));
 			if (!logfile.exists())
 			{
 				logfile.createNewFile();
