@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity
 				ResourceManager.putPreferences("timer", position);
 				Logger.get().log(Logger.Level.DEBUG, position);
 				ResourceManager.commitPreferences();
-				WallpaperUpdateThread.SLEEP_TIME = (long)(timeset.getMillis());
+				WallpaperUpdateThread.SLEEP_TIME = timeset.getMillis();
 				toast("Time between 2 wallpapers was set to: " + timeset.toString(), false);
 			}
 

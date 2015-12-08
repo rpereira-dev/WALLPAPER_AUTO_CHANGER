@@ -17,7 +17,7 @@ public class WallpaperUpdateThread extends Thread implements Runnable
 		{
 			long sleep = SLEEP_TIME;
 
-			if (WallpaperManager.update())
+			if (WallpaperManager.update() == false)
 			{
 				sleep = DEFAULT_SLEEP_TIME;
 			}
