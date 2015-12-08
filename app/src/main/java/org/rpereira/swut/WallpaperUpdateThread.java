@@ -5,7 +5,8 @@ package org.rpereira.swut;
  */
 public class WallpaperUpdateThread extends Thread implements Runnable
 {
-	public static long SLEEP_TIME = 1000;
+	private static long DEFAULT_SLEEP_TIME = 5000;
+	public static long SLEEP_TIME = DEFAULT_SLEEP_TIME;
 
 	private boolean _run = false;
 
@@ -14,12 +15,17 @@ public class WallpaperUpdateThread extends Thread implements Runnable
 	{
 		while (this._run)
 		{
-			WallpaperManager.update();
+			long sleep = SLEEP_TIME;
+
+			if (WallpaperManager.update())
+			{
+				sleep = DEFAULT_SLEEP_TIME;
+			}
 
 			try
 			{
-				Logger.get().log(Logger.Level.FINE, "Wallpaper update sleep for: " + SLEEP_TIME / 1000 + " sec");
-				Thread.sleep(SLEEP_TIME);
+				Logger.get().log(Logger.Level.FINE, "Wallpaper update sleep for: " + sleep + " sec");
+				Thread.sleep(sleep);
 			}
 			catch (InterruptedException e)
 			{

@@ -42,12 +42,13 @@ public class WallpaperType
 
 	public void load()
 	{
-		this.use(ResourceManager.getPreferences(this._name + ":use", this._default_value));
+		this.use(ResourceManager.getPreferences(this._name + ":use:", this._default_value));
 	}
 
 	public void save()
 	{
-		ResourceManager.putPreferences(this._name + ":use", this.using());
+		ResourceManager.putPreferences(this._name + ":use:", this.using());
+		ResourceManager.commitPreferences();
 	}
 
 	public void use(boolean use)

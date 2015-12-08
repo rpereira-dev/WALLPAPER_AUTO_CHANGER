@@ -179,7 +179,7 @@ public class MainActivity extends AppCompatActivity
 		spinner.setAdapter(spinnerArrayAdapter);
 		layout.addView(spinner);
 		int index = ResourceManager.getPreferences("timer", 0);
-		WallpaperUpdateThread.SLEEP_TIME = (long)(choices.get(index).getValue() * 1000);
+		WallpaperUpdateThread.SLEEP_TIME = (long)(choices.get(index).getMillis());
 		spinner.setSelection(index);
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 		{
@@ -190,7 +190,7 @@ public class MainActivity extends AppCompatActivity
 				ResourceManager.putPreferences("timer", position);
 				Logger.get().log(Logger.Level.DEBUG, position);
 				ResourceManager.commitPreferences();
-				WallpaperUpdateThread.SLEEP_TIME = (long)(timeset.getValue() * 1000);
+				WallpaperUpdateThread.SLEEP_TIME = (long)(timeset.getMillis());
 				toast("Time between 2 wallpapers was set to: " + timeset.toString(), false);
 			}
 
@@ -215,6 +215,7 @@ public class MainActivity extends AppCompatActivity
 				public void onClick(View v)
 				{
 					type.use(checkbox.isChecked());
+					type.save();
 				}
 			});
 			layout.addView(checkbox);
@@ -266,12 +267,12 @@ public class MainActivity extends AppCompatActivity
 
 class SpinnerTimeValue
 {
-	private int _value;
+	private int _sec;
 	private String _str;
 
-	public SpinnerTimeValue(int value, String str)
+	public SpinnerTimeValue(int sec, String str)
 	{
-		this._value = value;
+		this._sec = sec;
 		this._str = str;
 	}
 
@@ -281,8 +282,13 @@ class SpinnerTimeValue
 		return (this._str);
 	}
 
-	public int getValue()
+	public int getSeconds()
 	{
-		return (this._value);
+		return (this._sec);
+	}
+
+	public int getMillis()
+	{
+		return (this._sec * 1000);
 	}
 }

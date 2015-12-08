@@ -185,6 +185,11 @@ public class WallpaperDownloader
 		this.searchWallpapers(url, deepness, imgcount);
 	}
 
+	public ArrayList<WallpaperImage> getImages()
+	{
+		return (this._images_valid);
+	}
+
 	/**
 	 * download every images on the given website url, and do it recursively on pages links
 	 */

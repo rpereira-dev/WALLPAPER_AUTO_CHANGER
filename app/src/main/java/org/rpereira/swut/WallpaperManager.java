@@ -30,6 +30,7 @@ public class WallpaperManager
 		_manager = android.app.WallpaperManager.getInstance(context);
 		_downloader = new WallpaperDownloader(dirpath);
 		_downloader.start();
+		MainActivity.toast(_downloader.getImages().size() + " images were loaded.", false);
 		_types = new ArrayList<>();
 		loadTypes();
 	}
@@ -150,11 +151,11 @@ public class WallpaperManager
 	}
 
 	/** update the wallpaper manager */
-	public static void update()
+	public static boolean update()
 	{
 		if (!_update)
 		{
-			return ;
+			return (false);
 		}
 
 		MainActivity.runOnUIThread(new Runnable()
@@ -174,6 +175,8 @@ public class WallpaperManager
 				}
 			}
 		});
+
+		return (true);
 	}
 
 	/**
