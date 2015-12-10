@@ -14,8 +14,10 @@
         android:layout_height="wrap_content"
         android:text="New ToggleButton"
         android:id="@+id/toggleButtonWallpaperDownload"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"/>
+        android:layout_below="@+id/textView"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:checked="false"/>
 
     <ToggleButton
         android:layout_width="wrap_content"
@@ -23,22 +25,25 @@
         android:text="New ToggleButton"
         android:id="@+id/toggleButtonWallpaperUpdate"
         android:layout_below="@+id/textViewWallpaperUpdate"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/swut_wallpaper_update_info"
         android:id="@+id/textViewWallpaperUpdate"
+        android:layout_marginTop="46dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="84dp"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/swut_wallpaper_download"
         android:id="@+id/textView"
-        android:layout_above="@+id/toggleButtonWallpaperDownload"
-        android:layout_centerHorizontal="true"/>
+        android:layout_alignTop="@+id/textViewWallpaperUpdate"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"/>
 </RelativeLayout>

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.widget.RelativeLayout;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -196,6 +198,12 @@ public class WallpaperManager
 			else
 			{
 				_manager.setBitmap(bitmap);
+				RelativeLayout layout = (RelativeLayout)MainActivity.instance().findViewById(R.id.content_layout);
+				if (MainActivity.instance().hasWindowFocus()
+						&& android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN)
+				{
+					layout.setBackground(Drawable.createFromPath(filepath));
+				}
 				Logger.get().log(Logger.Level.FINE, "Wallpaper set: " + filepath);
 			}
 		}

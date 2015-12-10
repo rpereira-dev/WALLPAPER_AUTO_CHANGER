@@ -52,6 +52,7 @@ public class MainActivity extends AppCompatActivity
 		setContentView(org.rpereira.swut.R.layout.activity_main);
 		Toolbar toolbar = (Toolbar) findViewById(org.rpereira.swut.R.id.toolbar);
 		setSupportActionBar(toolbar);
+
 		this.initialize();
 	}
 
