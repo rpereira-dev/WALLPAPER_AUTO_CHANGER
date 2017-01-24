@@ -173,7 +173,7 @@ public class WallpaperManager
 				else
 				{
 					Logger.get().log(Logger.Level.ERROR, "Couldnt get any random images!");
-					MainActivity.toast("Not wallpaper where found!", false);
+					MainActivity.toast("No wallpaper were found!", false);
 				}
 			}
 		});
