@@ -17,7 +17,9 @@
         android:layout_below="@+id/textView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:checked="false"/>
+        android:checked="false"
+        android:textOff="OFF"
+        android:textOn="ON" />
 
     <ToggleButton
         android:layout_width="wrap_content"
@@ -26,12 +28,14 @@
         android:id="@+id/toggleButtonWallpaperUpdate"
         android:layout_below="@+id/textViewWallpaperUpdate"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"/>
+        android:layout_alignParentStart="true"
+        android:textOff="OFF"
+        android:textOn="ON" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/swut_wallpaper_update_info"
+        android:text="@string/wallpaper_update_info"
         android:id="@+id/textViewWallpaperUpdate"
         android:layout_marginTop="46dp"
         android:layout_alignParentTop="true"
@@ -41,7 +45,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/swut_wallpaper_download"
+        android:text="@string/wallpaper_download"
         android:id="@+id/textView"
         android:layout_alignTop="@+id/textViewWallpaperUpdate"
         android:layout_alignParentRight="true"

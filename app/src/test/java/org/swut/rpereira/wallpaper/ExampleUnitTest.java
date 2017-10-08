@@ -1,4 +1,4 @@
-package org.swut.rpereira.swagutilitiesswut;
+package org.swut.rpereira.wallpaper;
 
 import org.junit.Test;
 

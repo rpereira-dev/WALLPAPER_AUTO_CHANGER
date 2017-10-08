@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SwagUtilities(Swut).iml" filepath="$PROJECT_DIR$/SwagUtilities(Swut).iml" />
+      <module fileurl="file://$PROJECT_DIR$/WALLPAPER_AUTO_CHANGER.iml" filepath="$PROJECT_DIR$/WALLPAPER_AUTO_CHANGER.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
